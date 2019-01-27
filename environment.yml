@@ -13,4 +13,6 @@ dependencies:
   - sphinx
   - click
   - coverage
+  - geopandas=0.4.0
+  - rasterio=1.0.14
   - python=3
