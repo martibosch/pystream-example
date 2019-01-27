@@ -3,6 +3,22 @@ PySTREAM example
 
 Example run of the STREAM hydrological runoff model
 
+Usage
+------------
+
+1. Create conda environment and activate it
+
+```bash
+make create_environment
+conda activate pystream-example
+```
+
+2. Install Python required packages
+
+```bash
+make requirements
+```
+
 Project Organization
 ------------
 
