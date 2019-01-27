@@ -18,6 +18,11 @@ conda activate pystream-example
 ```bash
 make requirements
 ```
+3. Register environment as jupyter kernel
+
+```bash
+python -m ipykernel install --user --name pystream-example --display-name "Python (pystream-example)"
+```
 
 Project Organization
 ------------
