@@ -31,6 +31,9 @@ cropped_dem: requirements
 filled_dem: cropped_dem
 	$(PYTHON_INTERPRETER) src/data/make_filled_dem.py
 
+aligned_lulc: cropped_dem
+	$(PYTHON_INTERPRETER) src/data/make_aligned_lulc.py
+
 ## Delete all compiled Python files
 clean:
 	find . -type f -name "*.py[co]" -delete
