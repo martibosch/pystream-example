@@ -28,6 +28,9 @@ endif
 cropped_dem: requirements
 	$(PYTHON_INTERPRETER) src/data/make_cropped_dem.py
 
+filled_dem: cropped_dem
+	$(PYTHON_INTERPRETER) src/data/make_filled_dem.py
+
 ## Delete all compiled Python files
 clean:
 	find . -type f -name "*.py[co]" -delete

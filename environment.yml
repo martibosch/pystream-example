@@ -6,6 +6,7 @@ dependencies:
     - python-dotenv>=0.5.1
     - awscli
     - awscli-plugin-endpoint
+    - richdem==0.3.4
   - setuptools
   - ipykernel
   - wheel
