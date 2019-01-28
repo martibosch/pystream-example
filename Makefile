@@ -9,12 +9,7 @@ BUCKET = ceat-stream
 PROFILE = ceat
 PROJECT_NAME = pystream-example
 PYTHON_INTERPRETER = python3
-
-ifeq (,$(shell which conda))
-HAS_CONDA=False
-else
-HAS_CONDA=True
-endif
+VIRTUALENV = conda
 
 #################################################################################
 # COMMANDS                                                                      #
@@ -22,8 +17,12 @@ endif
 
 ## Install Python Dependencies
 requirements: test_environment
+ifeq (conda, $(VIRTUALENV))
+	conda env update --name $(PROJECT_NAME) -f environment.yml
+else
 	$(PYTHON_INTERPRETER) -m pip install -U pip setuptools wheel
 	$(PYTHON_INTERPRETER) -m pip install -r requirements.txt
+endif
 
 ## Make Dataset
 data: requirements
@@ -56,13 +55,9 @@ endif
 
 ## Set up python interpreter environment
 create_environment:
-ifeq (True,$(HAS_CONDA))
+ifeq (conda,$(VIRTUALENV))
 		@echo ">>> Detected conda, creating conda environment."
-ifeq (3,$(findstring 3,$(PYTHON_INTERPRETER)))
-	conda create --name $(PROJECT_NAME) python=3
-else
-	conda create --name $(PROJECT_NAME) python=2.7
-endif
+	conda env create --name $(PROJECT_NAME) -f environment.yml
 		@echo ">>> New conda env created. Activate with:\nsource activate $(PROJECT_NAME)"
 else
 	$(PYTHON_INTERPRETER) -m pip install -q virtualenv virtualenvwrapper
@@ -74,6 +69,11 @@ endif
 
 ## Test python environment is setup correctly
 test_environment:
+ifeq (conda,$(VIRTUALENV))
+ifneq (${CONDA_DEFAULT_ENV}, $(PROJECT_NAME))
+	$(error Must activate `$(PROJECT_NAME)` environment before proceeding)
+endif
+endif
 	$(PYTHON_INTERPRETER) test_environment.py
 
 #################################################################################

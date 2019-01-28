@@ -1,0 +1,16 @@
+name: pystream-example
+dependencies:
+  - pip
+  - pip:
+    - -e .
+    - python-dotenv>=0.5.1
+    - awscli
+    - awscli-plugin-endpoint
+  - setuptools
+  - ipykernel
+  - wheel
+  - flake8
+  - sphinx
+  - click
+  - coverage
+  - python=3
