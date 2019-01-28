@@ -8,6 +8,7 @@ dependencies:
     - awscli-plugin-endpoint
     - richdem==0.3.4
     - pygeoprocessing==1.6.0
+    - salem==0.2.3
   - setuptools
   - ipykernel
   - wheel
@@ -19,4 +20,8 @@ dependencies:
   - pandas=0.24.0  
   - geopandas=0.4.0
   - rasterio=1.0.14
+  - dask=1.1.0
+  - joblib=0.13.1
+  - netcdf4=1.4.2
+  - xarray=0.11.3
   - python=3

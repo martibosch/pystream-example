@@ -37,6 +37,9 @@ aligned_lulc: cropped_dem
 crop_factor: aligned_lulc
 	$(PYTHON_INTERPRETER) src/data/make_crop_factor.py
 
+cropped_prec: cropped_dem
+	$(PYTHON_INTERPRETER) src/data/make_cropped_prec.py
+
 ## Delete all compiled Python files
 clean:
 	find . -type f -name "*.py[co]" -delete

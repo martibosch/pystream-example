@@ -1,5 +1,9 @@
 Since the dataset with highest resolution is the DEM, we will align our datasets to it.
 
+## Notes
+
+* Saving `.nc` files aligned to a finer resolution is verbose and space inefficient, so we will just crop them first, and align them in runtime within the `STREAM` step (thus avoiding to store the files)
+
 ```mermaid
 graph TD
 DEM[DEM tif] --> CROP(Crop to watershed extent);
@@ -13,13 +17,13 @@ ALIGNL --> LULCA[Aligned LULC];
 LULCA --> MAPC(Map to crop factor);
 MAPC --> CROPF[CROPF];
 
-DEMC --> ALIGNT(Align to Cropped DEM);
-TEMP[TEMP nc] --> ALIGNT;
-ALIGNT --> TEMPA[Aligned TEMP];
+DEMC --> CROPT(Crop to watershed extent);
+TEMP[TEMP nc] --> CROPT;
+CROPT --> TEMPA[Cropped TEMP];
 
-DEMC --> ALIGNP(Align to Cropped DEM);
-PREC[PREC nc] --> ALIGNP;
-ALIGNP --> PRECA[Aligned PREC];
+DEMC --> CROPP(Crop to watershed extent);
+PREC[PREC nc] --> CROPP;
+CROPP --> PRECA[Cropped PREC];
 
 DEMC --> FILL(Fill pits);
 FILL --> DEMF[Filled DEM];
