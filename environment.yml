@@ -16,6 +16,7 @@ dependencies:
   - click
   - coverage
   - cython=0.29.3
+  - pandas=0.24.0  
   - geopandas=0.4.0
   - rasterio=1.0.14
   - python=3
