@@ -1,4 +1,5 @@
-.PHONY: clean all_datasets cropped_dem filled_dem aligned_lulc crop_factor cropped_prec cropped_temp lint requirements sync_data_to_s3 sync_data_from_s3
+.PHONY: clean all_datasets cropped_dem filled_dem aligned_lulc crop_factor \
+   cropped_prec cropped_temp lint requirements sync_data_to_s3 sync_data_from_s3
 
 #################################################################################
 # GLOBALS                                                                       #
@@ -44,19 +45,19 @@ all_datasets: cropped_dem filled_dem aligned_lulc crop_factor cropped_prec cropp
 cropped_dem: requirements
 	$(PYTHON_INTERPRETER) src/data/make_dataset.py cropped-dem $(DEM) $(WSHED) $(CROPPED_DEM)
 
-filled_dem: cropped_dem
+filled_dem: $(CROPPED_DEM)
 	$(PYTHON_INTERPRETER) src/data/make_dataset.py filled-dem $(CROPPED_DEM) $(FILLED_DEM)
 
-aligned_lulc: cropped_dem
+aligned_lulc: $(CROPPED_DEM)
 	$(PYTHON_INTERPRETER) src/data/make_dataset.py aligned-lc $(CROPPED_DEM) $(LC) $(ALIGNED_LC)
 
-crop_factor: aligned_lulc
+crop_factor: $(ALIGNED_LC)
 	$(PYTHON_INTERPRETER) src/data/make_dataset.py crop-factor $(LC_TO_CROPF) $(ALIGNED_LC) $(CROPF)
 
-cropped_prec: cropped_dem
+cropped_prec: $(CROPPED_DEM)
 	$(PYTHON_INTERPRETER) src/data/make_dataset.py cropped-ds $(PREC_DIR) $(CROPPED_DEM) $(CROPPED_PREC)
 
-cropped_temp: cropped_dem
+cropped_temp: $(CROPPED_DEM)
 	$(PYTHON_INTERPRETER) src/data/make_dataset.py cropped-ds $(TEMP_DIR) $(CROPPED_DEM) $(CROPPED_TEMP)
 
 ## Delete all compiled Python files
