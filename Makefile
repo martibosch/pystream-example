@@ -1,4 +1,4 @@
-.PHONY: clean data lint requirements sync_data_to_s3 sync_data_from_s3
+.PHONY: clean all_datasets cropped_dem filled_dem aligned_lulc crop_factor cropped_prec cropped_temp lint requirements sync_data_to_s3 sync_data_from_s3
 
 #################################################################################
 # GLOBALS                                                                       #
@@ -24,26 +24,40 @@ else
 	$(PYTHON_INTERPRETER) -m pip install -r requirements.txt
 endif
 
+## Dataset filepaths
+DEM = data/external/swissALTI_reduced_res_lv95_3.tif
+WSHED = data/external/watershed/wshed.shp
+CROPPED_DEM = data/processed/cropped_dem.tif
+FILLED_DEM = data/processed/filled_dem.tif
+LC = data/external/g100_clc12_V18_5a/g100_clc12_V18_5.tif
+ALIGNED_LC = data/interim/aligned_lc.tif
+LC_TO_CROPF = data/external/lulc_to_crop_factor.csv
+CROPF = data/processed/crop_factor.tif
+PREC_DIR = data/external/meteoswiss/monthly/prec
+CROPPED_PREC = data/processed/cropped_prec.nc
+TEMP_DIR = data/external/meteoswiss/monthly/temp_avg
+CROPPED_TEMP = data/processed/cropped_temp.nc
+
 ## Make Datasets
 all_datasets: cropped_dem filled_dem aligned_lulc crop_factor cropped_prec cropped_temp
 
 cropped_dem: requirements
-	$(PYTHON_INTERPRETER) src/data/make_cropped_dem.py
+	$(PYTHON_INTERPRETER) src/data/make_dataset.py cropped-dem $(DEM) $(WSHED) $(CROPPED_DEM)
 
 filled_dem: cropped_dem
-	$(PYTHON_INTERPRETER) src/data/make_filled_dem.py
+	$(PYTHON_INTERPRETER) src/data/make_dataset.py filled-dem $(CROPPED_DEM) $(FILLED_DEM)
 
 aligned_lulc: cropped_dem
-	$(PYTHON_INTERPRETER) src/data/make_aligned_lulc.py
+	$(PYTHON_INTERPRETER) src/data/make_dataset.py aligned-lc $(CROPPED_DEM) $(LC) $(ALIGNED_LC)
 
 crop_factor: aligned_lulc
-	$(PYTHON_INTERPRETER) src/data/make_crop_factor.py
+	$(PYTHON_INTERPRETER) src/data/make_dataset.py crop-factor $(LC_TO_CROPF) $(ALIGNED_LC) $(CROPF)
 
 cropped_prec: cropped_dem
-	$(PYTHON_INTERPRETER) src/data/make_cropped_prec.py
+	$(PYTHON_INTERPRETER) src/data/make_dataset.py cropped-ds $(PREC_DIR) $(CROPPED_DEM) $(CROPPED_PREC)
 
 cropped_temp: cropped_dem
-	$(PYTHON_INTERPRETER) src/data/make_cropped_temp.py
+	$(PYTHON_INTERPRETER) src/data/make_dataset.py cropped-ds $(TEMP_DIR) $(CROPPED_DEM) $(CROPPED_TEMP)
 
 ## Delete all compiled Python files
 clean:
