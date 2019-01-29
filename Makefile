@@ -20,6 +20,8 @@ LC = data/external/g100_clc12_V18_5a/g100_clc12_V18_5.tif
 ALIGNED_LC = data/interim/aligned_lc.tif
 LC_TO_CROPF = data/external/lulc_to_crop_factor.csv
 CROPF = data/processed/crop_factor.tif
+WHC = data/external/TAWC_topsoil.tif
+ALIGNED_WHC = data/processed/aligned_whc.tif
 PREC_DIR = data/external/meteoswiss/monthly/prec
 CROPPED_PREC = data/processed/cropped_prec.nc
 TEMP_DIR = data/external/meteoswiss/monthly/temp_avg
@@ -39,7 +41,7 @@ else
 endif
 
 ## Make Datasets
-all_datasets: cropped_dem filled_dem aligned_lulc crop_factor cropped_prec cropped_temp
+all_datasets: cropped_dem filled_dem aligned_lulc crop_factor aligned_whc cropped_prec cropped_temp
 
 cropped_dem: requirements
 	$(PYTHON_INTERPRETER) src/data/make_dataset.py cropped-dem $(DEM) $(WSHED) $(CROPPED_DEM)
@@ -48,10 +50,13 @@ filled_dem: $(CROPPED_DEM)
 	$(PYTHON_INTERPRETER) src/data/make_dataset.py filled-dem $(CROPPED_DEM) $(FILLED_DEM)
 
 aligned_lulc: $(CROPPED_DEM)
-	$(PYTHON_INTERPRETER) src/data/make_dataset.py aligned-lc $(CROPPED_DEM) $(LC) $(ALIGNED_LC)
+	$(PYTHON_INTERPRETER) src/data/make_dataset.py aligned-raster $(LC) $(CROPPED_DEM) $(ALIGNED_LC)
 
 crop_factor: $(ALIGNED_LC)
 	$(PYTHON_INTERPRETER) src/data/make_dataset.py crop-factor $(LC_TO_CROPF) $(ALIGNED_LC) $(CROPF)
+
+aligned_whc: $(CROPPED_DEM)
+	$(PYTHON_INTERPRETER) src/data/make_dataset.py aligned-raster $(WHC) $(CROPPED_DEM) $(ALIGNED_WHC)
 
 cropped_prec: $(CROPPED_DEM)
 	$(PYTHON_INTERPRETER) src/data/make_dataset.py cropped-ds $(PREC_DIR) $(CROPPED_DEM) $(CROPPED_PREC)

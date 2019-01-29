@@ -70,17 +70,19 @@ def filled_dem(ctx, cropped_dem_fp, filled_dem_fp):
 
 @cli.command()
 @click.pass_context
-@click.argument('cropped_dem_fp', type=click.Path(exists=True))
-@click.argument('lc_fp', type=click.Path(exists=True))
-@click.argument('aligned_lc_fp', type=click.Path())
-def aligned_lc(ctx, cropped_dem_fp, lc_fp, aligned_lc_fp):
+@click.argument('input_raster_fp', type=click.Path(exists=True))
+@click.argument('reference_raster_fp', type=click.Path(exists=True))
+@click.argument('output_raster_fp', type=click.Path())
+def aligned_raster(ctx, input_raster_fp, reference_raster_fp,
+                   output_raster_fp):
     logger = ctx.obj['LOGGER']
-    logger.info("Aligning LC to DEM")
-    with rasterio.open(cropped_dem_fp) as cropped_dem_src:
+    logger.info("Aligning {} to {}".format(input_raster_fp,
+                                           reference_raster_fp))
+    with rasterio.open(reference_raster_fp) as reference_src:
         pygeoprocessing.align_and_resize_raster_stack(
-            [lc_fp], [aligned_lc_fp], ['near'], cropped_dem_src.res,
-            bounding_box_mode=cropped_dem_src.bounds,
-            target_sr_wkt=cropped_dem_src.crs.to_string())
+            [input_raster_fp], [output_raster_fp], ['near'], reference_src.res,
+            bounding_box_mode=reference_src.bounds,
+            target_sr_wkt=reference_src.crs.to_string())
     logger.info("DONE")
 
 
