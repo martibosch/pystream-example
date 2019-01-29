@@ -25,6 +25,8 @@ else
 endif
 
 ## Make Datasets
+all_datasets: cropped_dem filled_dem aligned_lulc crop_factor cropped_prec cropped_temp
+
 cropped_dem: requirements
 	$(PYTHON_INTERPRETER) src/data/make_cropped_dem.py
 
