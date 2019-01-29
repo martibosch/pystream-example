@@ -2,6 +2,10 @@ Since the dataset with highest resolution is the DEM, we will align our datasets
 
 ## Notes
 
+* In our DAG, rectangular nodes with squared edges represent data, whereas nodes with rounded edges represent computing tasks.
+* By `align`, we denote a computing task consists of:
+    * Cropping an input raster to match the extent of a reference raster, and
+    * Aligning the input raster to match the reference of a reference raster
 * Saving `.nc` files aligned to a finer resolution is verbose and space inefficient, so we will just crop them first, and align them in runtime within the `STREAM` step (thus avoiding to store the files)
 
 ```mermaid
@@ -28,9 +32,13 @@ CROPP --> PRECA[Cropped PREC];
 DEMC --> FILL(Fill pits);
 FILL --> DEMF[Filled DEM];
 
+DEMC --> ALIGNW(Align to Cropped DEM);
+WHC[WHC tif] --> ALIGNW;
+ALIGNW --> WHCA[Aligned WHC];
+
 DEMF --> STREAM[STREAM];
 CROPF --> STREAM;
-WHC[WHC tif] --> STREAM;
+WHCA --> STREAM;
 TEMPA --> STREAM;
 PRECA --> STREAM;
 STREAM --> FLOW[Flow];
