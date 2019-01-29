@@ -19,6 +19,7 @@ dependencies:
   - sphinx
   - click
   - coverage
+  - jupyter=1.0.0
   - cython=0.29.3
   - pandas=0.24.0  
   - geopandas=0.4.0
