@@ -28,11 +28,7 @@ CROPP --> PRECA[Cropped PREC];
 DEMC --> FILL(Fill pits);
 FILL --> DEMF[Filled DEM];
 
-DEMF --> SLOPEF(Slope from DEM);
-SLOPEF --> SLOPE[Slope];
-
 DEMF --> STREAM[STREAM];
-SLOPE --> STREAM;
 CROPF --> STREAM;
 WHC[WHC tif] --> STREAM;
 TEMPA --> STREAM;
