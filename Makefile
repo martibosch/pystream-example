@@ -65,6 +65,13 @@ clean:
 	find . -type f -name "*.py[co]" -delete
 	find . -type d -name "__pycache__" -delete
 
+## Clean interim and processed data
+clean_data:
+	find data/interim/ ! -name '.gitkeep' -type f -exec rm -f {} +
+	find data/interim/ ! -path data/interim/ -type d -exec rm -rf {} +
+	find data/processed/ ! -name '.gitkeep' -type f -exec rm -f {} +
+	find data/processed/ ! -path data/processed/ -type d -exec rm -rf {} +
+
 ## Lint using flake8
 lint:
 	flake8 src
@@ -72,17 +79,21 @@ lint:
 ## Upload Data to S3
 sync_data_to_s3:
 ifeq (default,$(PROFILE))
-	aws s3 sync data/ s3://$(BUCKET)/data/
+	aws s3 sync data/external s3://$(BUCKET)/data/external --exclude '.gitkeep'
+	aws s3 sync data/raw s3://$(BUCKET)/data/raw --exclude '.gitkeep'
 else
-	aws s3 sync data/ s3://$(BUCKET)/data/ --profile $(PROFILE)
+	aws s3 sync data/external s3://$(BUCKET)/data/external --profile $(PROFILE) --exclude '.gitkeep'
+	aws s3 sync data/raw s3://$(BUCKET)/data/raw --profile $(PROFILE) --exclude '.gitkeep'
 endif
 
 ## Download Data from S3
 sync_data_from_s3:
 ifeq (default,$(PROFILE))
-	aws s3 sync s3://$(BUCKET)/data/ data/
+	aws s3 sync s3://$(BUCKET)/data/external data/external
+	aws s3 sync s3://$(BUCKET)/data/raw data/raw
 else
-	aws s3 sync s3://$(BUCKET)/data/ data/ --profile $(PROFILE)
+	aws s3 sync s3://$(BUCKET)/data/external data/external --profile $(PROFILE)
+	aws s3 sync s3://$(BUCKET)/data/raw data/raw --profile $(PROFILE)
 endif
 
 ## Set up python interpreter environment
