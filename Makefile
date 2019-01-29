@@ -12,20 +12,6 @@ PROJECT_NAME = pystream-example
 PYTHON_INTERPRETER = python3
 VIRTUALENV = conda
 
-#################################################################################
-# COMMANDS                                                                      #
-#################################################################################
-
-## Install Python Dependencies
-requirements: test_environment
-ifeq (conda, $(VIRTUALENV))
-	conda env update --name $(PROJECT_NAME) -f environment.yml
-else
-	$(PYTHON_INTERPRETER) -m pip install -U pip setuptools wheel
-	$(PYTHON_INTERPRETER) -m pip install -r requirements.txt
-endif
-
-## Dataset filepaths
 DEM = data/external/swissALTI_reduced_res_lv95_3.tif
 WSHED = data/external/watershed/wshed.shp
 CROPPED_DEM = data/processed/cropped_dem.tif
@@ -38,6 +24,19 @@ PREC_DIR = data/external/meteoswiss/monthly/prec
 CROPPED_PREC = data/processed/cropped_prec.nc
 TEMP_DIR = data/external/meteoswiss/monthly/temp_avg
 CROPPED_TEMP = data/processed/cropped_temp.nc
+
+#################################################################################
+# COMMANDS                                                                      #
+#################################################################################
+
+## Install Python Dependencies
+requirements: test_environment
+ifeq (conda, $(VIRTUALENV))
+	conda env update --name $(PROJECT_NAME) -f environment.yml
+else
+	$(PYTHON_INTERPRETER) -m pip install -U pip setuptools wheel
+	$(PYTHON_INTERPRETER) -m pip install -r requirements.txt
+endif
 
 ## Make Datasets
 all_datasets: cropped_dem filled_dem aligned_lulc crop_factor cropped_prec cropped_temp
@@ -101,7 +100,10 @@ create_environment:
 ifeq (conda,$(VIRTUALENV))
 		@echo ">>> Detected conda, creating conda environment."
 	conda env create --name $(PROJECT_NAME) -f environment.yml
-		@echo ">>> New conda env created. Activate with:\nsource activate $(PROJECT_NAME)"
+		@echo ">>> New conda env created. Activate with:\nconda activate $(PROJECT_NAME)"
+		@echo ">>> Registering environment as jupyter kernelspec"
+	$(PYTHON_INTERPRETER) -m ipykernel install --user --name $(PROJECT_NAME) --display-name "Python ($(PROJECT_NAME))"
+		@echo ">>> DONE"
 else
 	$(PYTHON_INTERPRETER) -m pip install -q virtualenv virtualenvwrapper
 	@echo ">>> Installing virtualenvwrapper if not already intalled.\nMake sure the following lines are in shell startup file\n\
