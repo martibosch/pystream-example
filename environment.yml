@@ -22,7 +22,6 @@ dependencies:
   - jupyter=1.0.0
   - cython=0.29.3
   - pandas=0.24.0  
-  - geopandas=0.4.0
   - rasterio=1.0.14
   - dask=1.1.0
   - joblib=0.13.1

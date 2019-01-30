@@ -4,7 +4,6 @@ from os import path
 from pathlib import Path
 
 import click
-import geopandas as gpd
 import numpy as np
 import pandas as pd
 import pygeoprocessing
@@ -13,7 +12,6 @@ import richdem
 import salem  # noqa
 import xarray as xr
 from dotenv import find_dotenv, load_dotenv
-from rasterio import mask
 
 
 @click.group()
@@ -36,17 +34,10 @@ def cropped_dem(ctx, dem_fp, watershed_fp, cropped_dem_fp):
     logger = ctx.obj['LOGGER']
     logger.info("Cropping DEM to watershed extent")
     with rasterio.open(dem_fp) as dataset:
-        gser = gpd.read_file(watershed_fp).to_crs(dataset.crs)['geometry']
-        out_image, out_transform = mask.mask(dataset, gser, crop=True)
-        out_meta = dataset.meta
-        out_meta.update({
-            'driver': 'GTiff',
-            'height': out_image.shape[1],
-            'width': out_image.shape[2],
-            'transform': out_transform
-        })
-        with rasterio.open(cropped_dem_fp, 'w', **out_meta) as out_dataset:
-            out_dataset.write(out_image)
+        pygeoprocessing.align_and_resize_raster_stack(
+            [dem_fp], [cropped_dem_fp], ['near'], dataset.res,
+            bounding_box_mode='intersection',
+            base_vector_path_list=[watershed_fp])
     logger.info("DONE")
 
 
@@ -114,7 +105,8 @@ def crop_factor(ctx, lc_to_cropf_fp, aligned_lc_fp, cropf_fp):
 @click.argument('mfds_dir', type=click.Path(exists=True))
 @click.argument('cropped_dem_fp', type=click.Path(exists=True))
 @click.argument('cropped_ds_fp', type=click.Path())
-def cropped_ds(ctx, mfds_dir, cropped_dem_fp, cropped_ds_fp):
+@click.argument('crop_margin', required=False, default=10)
+def cropped_ds(ctx, mfds_dir, cropped_dem_fp, cropped_ds_fp, crop_margin):
     logger = ctx.obj['LOGGER']
     logger.info(
         "Cropping mfdataset in {} to watershed extent".format(mfds_dir))
@@ -135,16 +127,16 @@ def cropped_ds(ctx, mfds_dir, cropped_dem_fp, cropped_ds_fp):
     for data_var in list(mfds.data_vars):
         mfds[data_var].attrs['pyproj_srs'] = ds_src
 
-    # open the DEM in xarray and preprocess it so that salem can understand
-    # the grid (same as for the `mfds`)
-    dem_ds = xr.open_rasterio(cropped_dem_fp)
-    dem_ds = dem_ds.drop('band')
-    dem_ds.attrs['pyproj_srs'] = 'epsg:2056'  # ugly hardcoded DEM crs
+    # open the DEM with salem
+    dem_ds = salem.open_xr_dataset(cropped_dem_fp)
 
-    # crop region of interest of the dataset and store it in a single `.nc`
-    # file
-    roi = mfds.salem.roi(dem_ds)
-    roi.to_netcdf(cropped_ds_fp)
+    # subset (crop to the bounds of the DEM) the dataset and store it in a
+    # single `.nc` file. Use a margin (in number of pixels) since cropping/
+    # aligning operations with datasets of different CRS might not always
+    # result in the exact same bounds. This way, we ensure that we can later
+    # overlay them without finding nan values at the edges.
+    subset = mfds.salem.subset(margin=crop_margin, ds=dem_ds)
+    subset.to_netcdf(cropped_ds_fp)
 
     logger.info("DONE")
 

@@ -12,11 +12,11 @@ PROJECT_NAME = pystream-example
 PYTHON_INTERPRETER = python3
 VIRTUALENV = conda
 
-DEM = data/external/swissALTI_reduced_res_lv95_3.tif
+DEM = data/external/DEM.tif
 WSHED = data/external/watershed/wshed.shp
 CROPPED_DEM = data/processed/cropped_dem.tif
 FILLED_DEM = data/processed/filled_dem.tif
-LC = data/external/g100_clc12_V18_5a/g100_clc12_V18_5.tif
+LC = data/external/AREA_NOAS04_AS18_72.tif
 ALIGNED_LC = data/interim/aligned_lc.tif
 LC_TO_CROPF = data/external/lulc_to_crop_factor.csv
 CROPF = data/processed/crop_factor.tif
