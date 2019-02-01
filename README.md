@@ -24,6 +24,18 @@ make requirements
 python -m ipykernel install --user --name pystream-example --display-name "Python (pystream-example)"
 ```
 
+4. Automatically preprocess all the data
+
+```bash
+make all_datasets
+```
+
+5. Open the [stream-calibration.ipynb](https://github.com/martibosch/pystream-example/blob/master/notebooks/stream-calibration.ipynb) notebook and try the manual calibration
+
+![gauge-flow](reports/figures/gauge-flow.png)
+
+See [the analysis DAG for more details](https://github.com/martibosch/pystream-example/blob/master/analysis-dag.md)
+
 Project Organization
 ------------
 

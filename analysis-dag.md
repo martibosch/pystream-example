@@ -8,6 +8,8 @@ Since the dataset with highest resolution is the DEM, we will align our datasets
     * Aligning the input raster to match the reference of a reference raster
 * Saving `.nc` files aligned to a finer resolution is verbose and space inefficient, so we will just crop them first, and align them in runtime within the `STREAM` step (thus avoiding to store the files)
 
+![analysis-dag](analysis-dag.png)
+
 ```mermaid
 graph TD
 DEM[DEM tif] --> CROP(Crop to watershed extent);
