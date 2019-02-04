@@ -6,5 +6,5 @@ setup(
     version='0.1.0',
     description='Example run of the STREAM hydrological runoff model',
     author='Martí Bosch',
-    license='',
+    license='GPL-3.0',
 )
